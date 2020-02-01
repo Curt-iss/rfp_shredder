@@ -2,6 +2,9 @@ RFP_Shredder
 ===============================================================================
 Highlight Search Terms and Analyze Request For Proposals (RFPs)
 
+![Application's Home Page](./images/Screenshot_Main_Page.png)
+
+
 Contents
 -------------------------------------------------------------------------------
 1. [Project Success](#project_success)
