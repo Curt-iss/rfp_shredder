@@ -7,6 +7,8 @@ verify_ssl = true
 scrape = "python scraper/sam_scraper.py"
 
 [dev-packages]
+autopep8 = "*"
+pylint = "*"
 
 [packages]
 beautifulsoup4 = "*"
