@@ -16,6 +16,13 @@ BASE_URL = 'https://beta.sam.gov/'
 
 # Classes ---------------------------------------------------------------------
 
+class HTTPError(Exception):
+    """ Raised when urllib.request does not return 200
+    """
+
+    def __init__(self, message):
+        self.message = message
+
 # Functions -------------------------------------------------------------------
 
 
@@ -43,14 +50,26 @@ def build_search_url(
     joined_terms = '%20'.join(search_terms)
     return f'{BASE_URL}search?keywords={joined_terms}&sort={sort}&is_active={str(is_active).lower()}'
 
+def request(url: str) -> str:
+    """ Makes a request to the url and returns a decoded response body
+    """
+    with urllib.request.urlopen(search_url) as response:
+        if response.status != 200:
+            raise HTTPError(f'Response status was: {response.status}')
+        else:
+            # sam.gov's meta specifies utf-8 encoding
+            return response.read().decode('utf-8')
+
+
 def find_num_pages(search_url: str) -> int:
     """ Find the number of pages in given query
     """
-    with urllib.request.urlopen(search_url) as response:
-        # sam.gov's meta specifies utf-8 encoding
-        html_page = response.read().decode('utf-8')
+    try:
+        html_page = request(search_url)
         # Parse an html page
         soup = BeautifulSoup(html_page, 'html.parser')
+    except HTTPError as err:
+        pass
 
     return 0
 
@@ -78,7 +97,6 @@ if __name__ == '__main__':
 
     # Open a tarfile writing with bz2 compression
     with tarfile.open(tar_path, 'w:bz2') as tar_file:
-        
         
         # While the tarfile is under 20GB
         while tar_path.stat().st_size // 2 ** 30 < 20:
