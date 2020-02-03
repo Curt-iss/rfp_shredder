@@ -9,9 +9,11 @@ scrape = "python scraper/sam_scraper.py"
 [dev-packages]
 autopep8 = "*"
 pylint = "*"
+ipykernel = "*"
+jupyter = "*"
+beautifulsoup4 = "*"
 
 [packages]
-beautifulsoup4 = "*"
 
 [requires]
 python_version = "3.8"
