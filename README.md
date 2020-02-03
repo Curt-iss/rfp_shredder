@@ -10,6 +10,7 @@ Contents
   - [Unknowns](#unknowns)
   - [Gallery](#gallery)
   - [Features](#features)
+  - [Usage](#usage)
   - [TODO List](#todo-list)
     - [Backlog](#backlog)
     - [Weekly Sprints](#weekly-sprints)
@@ -32,6 +33,8 @@ Gallery
 Features
 -------------------------------------------------------------------------------
 
+Usage
+-------------------------------------------------------------------------------
 
 TODO List
 -------------------------------------------------------------------------------

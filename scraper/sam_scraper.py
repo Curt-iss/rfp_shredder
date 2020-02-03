@@ -4,6 +4,7 @@
 
 from bs4 import BeautifulSoup
 from datetime import datetime
+import os
 from pathlib import Path
 import urllib.request
 import sys
@@ -16,15 +17,23 @@ BASE_URL = 'https://beta.sam.gov/'
 
 # Classes ---------------------------------------------------------------------
 
+
 class HTTPError(Exception):
     """ Raised when urllib.request does not return 200
     """
 
-    def __init__(self, message):
+    def __init__(self, message, status):
         self.message = message
+        self.status = status
 
 # Functions -------------------------------------------------------------------
 
+
+def root_path() -> Path:
+    """ Platform independent of finding the root directory
+    """
+    root_str = os.path.splitdrive(sys.executable)[0]
+    return  Path('/') if root_str == '' else Path(root_str)
 
 def build_search_url(
         search_terms: List[str],
@@ -33,7 +42,7 @@ def build_search_url(
     """ Create a url containing the correct parameters
 
         Using the BASE_URL, this functions appends the given search terms
-        to the url. This function also allows the search to be customized 
+        to the url. This function also allows the search to be customized
         by changing default arguments.
 
         Params:
@@ -55,7 +64,9 @@ def request(url: str) -> str:
     """
     with urllib.request.urlopen(search_url) as response:
         if response.status != 200:
-            raise HTTPError(f'Response status was: {response.status}')
+            raise HTTPError(
+                f'Response status was: {response.status}',
+                response.status)
         else:
             # sam.gov's meta specifies utf-8 encoding
             return response.read().decode('utf-8')
@@ -64,18 +75,22 @@ def request(url: str) -> str:
 def find_num_pages(search_url: str) -> int:
     """ Find the number of pages in given query
     """
-    try:
-        html_page = request(search_url)
-        # Parse an html page
-        soup = BeautifulSoup(html_page, 'html.parser')
-    except HTTPError as err:
-        pass
+    html_page = request(search_url)
+    # Turn an html response into soup
+    soup = BeautifulSoup(html_page, 'html.parser')
+    page_buttons = soup.find_all("a", class_ = 'page-button')
+        
+    # The largest page number is the next to last button
+    # This normally happens to be 1000
+    return int(page_buttons[-2].text)
 
-    return 0
-
+def get_result_links(search_soup: BeautifulSoup) -> List[str]:
+    """ This function scrapes the result links from a page.
+    """
+    anchors = search_soup.find_all('a', class_='wordbreak ng-star-inserted')
+    return [anchor.href for anchor in anchors]
 
 # Main ------------------------------------------------------------------------
-
 
 if __name__ == '__main__':
     if len(sys.argv) > 1:
@@ -87,18 +102,35 @@ if __name__ == '__main__':
 
     search_url = build_search_url(search_terms)
 
-    num_pages = find_num_pages(search_url)
-
+    try:
+        num_pages = find_num_pages(search_url)
+    except HTTPError as err:
+        print(f'Unable to reach URL - Response Status was {err.status}')
+        sys.exit(1)        
+    
     # If I ever figure out argparse-ing, cli args could be som much better
     # wouldn't need to hardcode this stuff
 
     # Path to write output tarfile
-    tar_path = Path(f'./sam_scrape_{datetime.now().isoformat()}.tar.bz2')
+    tar_path = Path(f'./sam_scrape.tar.bz2')
 
     # Open a tarfile writing with bz2 compression
     with tarfile.open(tar_path, 'w:bz2') as tar_file:
-        
-        # While the tarfile is under 20GB
-        while tar_path.stat().st_size // 2 ** 30 < 20:
-            pass
+
+        # While my VM is under 25GB
+        while root_path().stat().st_size // 2 ** 30 < 25:
+            for page in range(1, num_pages + 1):
+
+                try:
+                    search_page_text = request(f'{search_url}&page={page}')
+                except HTTPError as err:
+                    print(f"Couldn't fetch page #{page} - Response Status was {err.status}")
+
+                search_page_soup = BeautifulSoup(search_page_text, 'html.parser')
+
+                # Scrape the search result links off the page
+                result_links = get_result_links(search_page_soup)
+
+                for link in result_links:
+                    pass
 
