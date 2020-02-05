@@ -59,6 +59,7 @@ Usage
       2. Prettier by Esben Petersen
       3. ESLint by Dirk Baeumer
       4. WSL extension by Microsoft (I forgot the exact name)
+      5. NPM by egamma
 
 #### Crap To Do
 
@@ -91,6 +92,7 @@ I honestly don't have a Mac, so I'm not 100% sure. These are more general Unix s
       1. Python by Microsoft
       2. Prettier by Esben Petersen
       3. ESLint by Dirk Baeumer
+      4. NPM by egamma
 
 #### Crap to Do
 
@@ -109,6 +111,9 @@ I honestly don't have a Mac, so I'm not 100% sure. These are more general Unix s
    1. Theoretically, `npm` and `node` got installed together, so this should work
    2. In a terminal enter: `npm i && npm start`
       1. Did a pretty box open up?
+   3. Alternatively, if you install the npm plugin, you should be able to see npm scripts in the bottom left. You can click 'start' to (hopefully) start electron.
+
+![Npm Scripts on the lower left](./images/Screenshot_NPM_script.png)
 
 TODO List
 -------------------------------------------------------------------------------
