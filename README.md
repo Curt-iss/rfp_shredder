@@ -51,7 +51,7 @@ Usage
 2. [WSL](https://docs.microsoft.com/en-us/windows/wsl/install-win10)
    1. __WARNING:__ I haven't been able to get electron to run in WSL, yet. It seems like WSL doesn't support GUI applications, and electron needs a version of chromium to run. But, installing the WSL is still the Windows recommended way to develop Node.js on Windows.
    2. Dr. Brown's Lab actually has some [Bash tutorials](https://docs.google.com/document/d/1RamTOnZqMghshHrruyBtOo_gDqxQ8DrCzV1SlGbCDJQ/edit) if you're unfamiliar with a command line. Skip the setting up a Linux VM, and try using VS Code to connect to the WSL. In VS Code, you can pull up a terminal (type CTRL+` (Right next to the '1')). Let me know what you think of the tutorial if you try it out, so I can give feedback.
-   3.  When your picking your version of linux to install, I'd pick Ubuntu.
+   3.  When picking your version of linux to install, I'd pick Ubuntu.
 3. [Visual Studio (Code?)](https://code.visualstudio.com/Download)
    1. [How to install extensions in VS Code](https://code.visualstudio.com/docs/editor/extension-gallery)
    2. Recommended Plugins for Node + Python development
