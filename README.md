@@ -65,11 +65,11 @@ Usage
 1. Cloning the repo 
    1. With VS Code connected to the WSL, pull up a terminal
    2. Commands:
-      1. ```bash
-          cd # Change directory to home
-          git clone https://github.com/Curt-iss/rfp_shredder # Clone our repo
-          cd rfp_shredder
-         ```
+```bash
+cd # Change directory to home
+git clone https://github.com/Curt-iss/rfp_shredder # Clone our repo
+cd rfp_shredder
+```
 2. Congrats, you're stuck at the same point as me.
    1. I think the next thing to do is symlink to the node.js executable you installed. Instructions coming when I figure it out.
 
@@ -81,7 +81,7 @@ I honestly don't have a Mac, so I'm not 100% sure. These are more general Unix s
 #### Crap to Install
 
 1. [Homebrew](https://brew.sh/)
-2.  Node.js (https://nodejs.org/en/download/)
+2.  Node.js 
     1.  If you installed Homebrew, open a terminal and enter: `brew install node`
     2. If you didn't install Homebrew, [nodejs.org](https://nodejs.org/en/download/) 
 3. [Visual Studio Code](https://code.visualstudio.com/Download)
@@ -107,7 +107,7 @@ I honestly don't have a Mac, so I'm not 100% sure. These are more general Unix s
 ```
 3. Starting Electron
    1. Theoretically, `npm` and `node` got installed together, so this should work
-   2. Commands: `npm i && npm start`
+   2. In a terminal enter: `npm i && npm start`
       1. Did a pretty box open up?
 
 TODO List
