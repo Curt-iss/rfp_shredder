@@ -25,9 +25,19 @@ Contents
 Project Success and End Goal
 -------------------------------------------------------------------------------
 
+The minimum viable product for this project will include an appealing front end that takes PDFs or Word Documents (.docx) as an input and outputs a processed docx. The output docx has highlighted and capitalized key search words provided. This should be done with an emphasis on maintaining the same page numbers and formatting as the original file.
+
 
 Unknowns
 -------------------------------------------------------------------------------
+
+At this point of writing, we have more unknowns relating to software and implementation than with Terathink’s workflow.
+
+We currently don’t know:
+1. How to programmatically convert a to PDF to docx
+2. How to analyze RFPs for important task/requirements
+   a. Highlighting, capitalizing, maintaining page numbers and formatting
+3. How to estimate if a Response addresses every demand of an RFP
 
 
 Gallery
