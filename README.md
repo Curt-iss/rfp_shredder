@@ -6,7 +6,7 @@ Highlight Search Terms and Analyze Request For Proposals (RFPs)
 Contents
 -------------------------------------------------------------------------------
 
-- [RFP_Shredder](#rfpshredder)
+- [RFP_Shredder](#rfp_shredder)
   - [Contents](#contents)
   - [Project Success and End Goal](#project-success-and-end-goal)
   - [Unknowns](#unknowns)
@@ -102,7 +102,7 @@ I honestly don't have a Mac, so I'm not 100% sure. These are more general Unix s
 1. [Homebrew](https://brew.sh/)
 2. Node.js
     1. If you installed Homebrew, open a terminal and enter: `brew install node`
-    2. If you didn't install Homebrew, [nodejs.org](https://nodejs.org/en/download/) 
+    2. If you didn't install Homebrew, [nodejs.org](https://nodejs.org/en/download/)
 3. [Visual Studio Code](https://code.visualstudio.com/Download)
    1. [How to install extensions in VS Code](https://code.visualstudio.com/docs/editor/extension-gallery)
    2. One time, I heard VS Code is already installed on MacOS?
