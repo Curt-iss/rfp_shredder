@@ -17,7 +17,6 @@ BASE_URL = 'https://beta.sam.gov/'
 
 # Classes ---------------------------------------------------------------------
 
-
 class HTTPError(Exception):
     """ Raised when urllib.request does not return 200
     """
@@ -32,6 +31,8 @@ class HTTPError(Exception):
 def root_path() -> Path:
     """ Platform independent of finding the root directory
     """
+    # ? I think there's actually a standard library way of
+    # ? doing this.
     root_str = os.path.splitdrive(sys.executable)[0]
     return  Path('/') if root_str == '' else Path(root_str)
 
