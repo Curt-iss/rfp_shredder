@@ -66,15 +66,15 @@ def build_search_url(
     return f'{BASE_URL}search?keywords={joined_terms}&sort={sort}&is_active={str(is_active).lower()}'
 
 #def request(url: str) -> str:
-    """ Makes a request to the url and returns a decoded response body
-    """
+#    """ Makes a request to the url and returns a decoded response body
+#    """
 #    with urllib.request.urlopen(search_url) as response:
 #        if response.status != 200:
 #            raise HTTPError(
 #                f'Response status was: {response.status}',
 #                response.status)
 #        else:
-            # sam.gov's meta specifies utf-8 encoding
+#            # sam.gov's meta specifies utf-8 encoding
 #            return response.read().decode('utf-8')
 
 
