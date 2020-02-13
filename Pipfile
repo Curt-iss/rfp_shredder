@@ -13,6 +13,7 @@ ipykernel = "*"
 jupyter = "*"
 beautifulsoup4 = "*"
 pdfminer = "*"
+selenium = "*"
 
 [packages]
 
