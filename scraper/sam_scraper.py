@@ -11,14 +11,19 @@ from pathlib import Path
 # import urllib.request
 # import requests
 from selenium import webdriver
+from selenium.webdriver.chrome.options import Options
 import sys
 import tarfile
 from typing import List
 
 # Constants -------------------------------------------------------------------
 
+# Setting up headless chrome...
+chrome_options = Options()
+chrome_options.add_argument('--headless')
+
 BASE_URL = 'https://beta.sam.gov/'
-WEB_DRIVER = webdriver.Chrome()
+WEB_DRIVER = webdriver.Chrome(chrome_options=chrome_options)
 
 # Classes ---------------------------------------------------------------------
 
@@ -129,7 +134,9 @@ if __name__ == '__main__':
             for page in range(1, num_pages + 1):
 
                 try:
-                    search_page_text = requests.get(f'{search_url}&page={page}').text
+                    print('Not got this far yet..')
+                    sys.exit(0)
+                    #search_page_text = requests.get(f'{search_url}&page={page}').text
                 except HTTPError as err:
                     print(f"Couldn't fetch page #{page} - Response Status was {err.status}")
 
