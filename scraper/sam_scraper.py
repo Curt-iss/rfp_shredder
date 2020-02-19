@@ -10,6 +10,7 @@ from pathlib import Path
 # html page, so we'll need a more robust HTTP handler
 # import urllib.request
 # import requests
+import os
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 import sys
@@ -23,7 +24,7 @@ chrome_options = Options()
 chrome_options.add_argument('--headless')
 
 BASE_URL = 'https://beta.sam.gov/'
-WEB_DRIVER = webdriver.Chrome(chrome_options=chrome_options)
+WEB_DRIVER = webdriver.Chrome(executable_path=os.path.abspath('chromedriver.exe'), chrome_options=chrome_options)
 
 # Classes ---------------------------------------------------------------------
 
