@@ -6,7 +6,11 @@ from bs4 import BeautifulSoup
 from datetime import datetime
 import os
 from pathlib import Path
-import urllib.request
+# beta.sam.gov uses Angular an make multiple server requests to build an entire
+# html page, so we'll need a more robust HTTP handler
+# import urllib.request
+# import requests
+from selenium import webdriver
 import sys
 import tarfile
 from typing import List
@@ -14,9 +18,9 @@ from typing import List
 # Constants -------------------------------------------------------------------
 
 BASE_URL = 'https://beta.sam.gov/'
+WEB_DRIVER = webdriver.Chrome()
 
 # Classes ---------------------------------------------------------------------
-
 
 class HTTPError(Exception):
     """ Raised when urllib.request does not return 200
@@ -32,6 +36,8 @@ class HTTPError(Exception):
 def root_path() -> Path:
     """ Platform independent of finding the root directory
     """
+    # ? I think there's actually a standard library way of
+    # ? doing this.
     root_str = os.path.splitdrive(sys.executable)[0]
     return  Path('/') if root_str == '' else Path(root_str)
 
@@ -59,27 +65,27 @@ def build_search_url(
     joined_terms = '%20'.join(search_terms)
     return f'{BASE_URL}search?keywords={joined_terms}&sort={sort}&is_active={str(is_active).lower()}'
 
-def request(url: str) -> str:
-    """ Makes a request to the url and returns a decoded response body
-    """
-    with urllib.request.urlopen(search_url) as response:
-        if response.status != 200:
-            raise HTTPError(
-                f'Response status was: {response.status}',
-                response.status)
-        else:
-            # sam.gov's meta specifies utf-8 encoding
-            return response.read().decode('utf-8')
+#def request(url: str) -> str:
+#    """ Makes a request to the url and returns a decoded response body
+#    """
+#    with urllib.request.urlopen(search_url) as response:
+#        if response.status != 200:
+#            raise HTTPError(
+#                f'Response status was: {response.status}',
+#                response.status)
+#        else:
+#            # sam.gov's meta specifies utf-8 encoding
+#            return response.read().decode('utf-8')
 
 
 def find_num_pages(search_url: str) -> int:
     """ Find the number of pages in given query
     """
-    html_page = request(search_url)
+    html_page = WEB_DRIVER.get(search_url).page_source
     # Turn an html response into soup
     soup = BeautifulSoup(html_page, 'html.parser')
-    page_buttons = soup.find_all("a", class_ = 'page-button')
-        
+    page_buttons = soup.find_all("a", class_='page-button')
+    print(html_page)
     # The largest page number is the next to last button
     # This normally happens to be 1000
     return int(page_buttons[-2].text)
@@ -99,6 +105,7 @@ if __name__ == '__main__':
         search_terms = sys.argv[1:]
     else:
         print('Please pass search terms as cli arguments...')
+        sys.exit(1)
 
     search_url = build_search_url(search_terms)
 
@@ -122,7 +129,7 @@ if __name__ == '__main__':
             for page in range(1, num_pages + 1):
 
                 try:
-                    search_page_text = request(f'{search_url}&page={page}')
+                    search_page_text = requests.get(f'{search_url}&page={page}').text
                 except HTTPError as err:
                     print(f"Couldn't fetch page #{page} - Response Status was {err.status}")
 
