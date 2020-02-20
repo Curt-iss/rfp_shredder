@@ -166,11 +166,7 @@ if __name__ == '__main__':
 
     search_url = build_search_url(search_terms)
 
-    try:
-        num_pages = find_num_pages(search_url)
-    except HTTPError as err:
-        print(f'Unable to reach URL - Response Status was {err.status}')
-        sys.exit(1)
+    num_pages = find_num_pages(search_url)
 
     # If I ever figure out argparse-ing, cli args could be som much better
     # wouldn't need to hardcode this stuff
