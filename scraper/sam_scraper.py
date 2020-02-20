@@ -26,14 +26,66 @@ WEB_DRIVER = webdriver.Chrome(chrome_options=chrome_options)
 
 # Classes ---------------------------------------------------------------------
 
+class RFP:
 
-class HTTPError(Exception):
-    """ Raised when urllib.request does not return 200
-    """
+    def __init__(self, rfp_url: str):
+        """ When given a url, this class contains the scraped contents.
+        """
+        WEB_DRIVER.get(rfp_url)
+        sleep(1)
 
-    def __init__(self, message, status):
-        self.message = message
-        self.status = status
+        self.__soup = BeautifulSoup(WEB_DRIVER.page_source, 'html.parser')
+
+        self.header = parse_header()
+
+        self.gen_info = parse_gen_info()
+
+        self.classification = parse_classification()
+
+        self.description = parse_description()
+
+        self.attachments = parse_attachments()
+
+    def parse_header(self):
+        """ Parse the header for this page
+        """
+        header = __soup.select_one('section#header')
+        header_dict = dict()
+        header_dict['is_active'] = header.select_one('span.sam.green.status.label.ng-star-inserted').string
+        notice_id_elem, content_elem = header.select('div.content')
+        header_dict['notice_id'] = notice_id_elem.select_one('div.description').string
+        
+        sub_headers = content_elem.select('div.header')
+        sub_descriptions = content_elem.select('div.description')
+        for i, child in enumerate(sub_headers):
+            header_dict[child.string] = sub_descriptions[i].string
+
+        return header_dict
+    
+    def parse_gen_info():
+        gen_info = __soup.select_one('section#general')
+        gen_info_dict = dict()
+
+        return gen_info_dict
+
+    def parse_classification():
+        classification = __soup.select_one('section#classification')
+        class_dict = dict()
+
+        return class_dict
+
+    def parse_description():
+        description = __soup.select_one('select#description')
+        description_dict = dict()
+
+        return description_dict
+
+    def parse_attachments():
+        attachments = __soup.select_one('attachment-section')
+        attachments_dict = dict()
+
+        return attachments_dict
+
 
 # Functions -------------------------------------------------------------------
 
@@ -55,7 +107,8 @@ def root_path() -> Path:
 def build_search_url(
         search_terms: List[str],
         sort: str = '-relevance',
-        is_active: bool = True) -> str:
+        index = 'opp',
+        is_active: bool = False) -> str:
     """ Create a url containing the correct parameters
 
         Using the BASE_URL, this functions appends the given search terms
@@ -74,7 +127,7 @@ def build_search_url(
     # There are more options available for sam.gov,
     # but it looks like they aren't necessary.
     joined_terms = '%20'.join(search_terms)
-    return f'{BASE_URL}search?keywords={joined_terms}&sort={sort}&is_active={str(is_active).lower()}'
+    return f'{BASE_URL}search?keywords={joined_terms}&sort={sort}&index={index}&is_active={str(is_active).lower()}'
 
 
 def find_num_pages(search_url: str) -> int:
