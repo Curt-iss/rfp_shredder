@@ -62,25 +62,25 @@ class RFP:
 
         return header_dict
     
-    def parse_gen_info():
+    def parse_gen_info(self):
         gen_info = __soup.select_one('section#general')
         gen_info_dict = dict()
 
         return gen_info_dict
 
-    def parse_classification():
+    def parse_classification(self):
         classification = __soup.select_one('section#classification')
         class_dict = dict()
 
         return class_dict
 
-    def parse_description():
+    def parse_description(self):
         description = __soup.select_one('select#description')
         description_dict = dict()
 
         return description_dict
 
-    def parse_attachments():
+    def parse_attachments(self):
         attachments = __soup.select_one('attachment-section')
         attachments_dict = dict()
 
