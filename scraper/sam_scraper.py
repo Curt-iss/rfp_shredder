@@ -66,25 +66,37 @@ class RFP:
         gen_info = self.__soup.select_one('section#general')
         gen_info_dict = dict()
 
+        list_items = gen_info.select('li')
+        for item in list_items:
+            gen_info_dict[item.contents[0].string] = item.string
+
         return gen_info_dict
 
     def parse_classification(self):
         classification = self.__soup.select_one('section#classification')
         class_dict = dict()
 
+        list_items = classification.select('li')
+        for item in list_items:
+            class_dict[item.contents[0].string] = item.string
+
         return class_dict
 
     def parse_description(self):
         description = self.__soup.select_one('select#description')
         description_dict = dict()
+        description_dict['text'] = ''
 
+        paragraphs = description.select('p')
+        for paragraph in paragraphs:
+            description_dict['text'] += paragraph.string
         return description_dict
 
     def parse_attachments(self):
         attachments = self.__soup.select_one('attachment-section')
-        attachments_dict = dict()
+        attachment_links = [a['href'] for a in attachments.select('a.file-link')]
 
-        return attachments_dict
+        return attachment_links
 
 
 # Functions -------------------------------------------------------------------
