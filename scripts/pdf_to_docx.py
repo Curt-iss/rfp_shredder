@@ -30,6 +30,9 @@ if __name__ == '__main__':
             # Make a call to libreoffice
             subprocess.call(command_str, shell=True)
 
+        else if pdf_path.suffix == '.docx':
+            # Already a docx, don't need to convert
+            
         else:
             print('Please give me a path to a pdf...')
             sys.exit(1)
