@@ -202,15 +202,15 @@ def get_result_links(search_soup: BeautifulSoup) -> List[str]:
 
 
 if __name__ == '__main__':
-    if len(sys.argv) > 1:
+    #if len(sys.argv) > 1:
         # Use arguments as search terms
         # Skip arg 0, always the program name
-        search_terms = sys.argv[1:]
-    else:
-        print('Please pass search terms as cli arguments...')
-        sys.exit(1)
+    #    search_terms = sys.argv[1:]
+    #else:
+    #    print('Please pass search terms as cli arguments...')
+    #    sys.exit(1)
 
-    search_url = build_search_url(search_terms)
+    search_url = build_search_url([])
 
     num_pages = find_num_pages(search_url)
 
