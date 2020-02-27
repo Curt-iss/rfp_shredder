@@ -240,8 +240,8 @@ if __name__ == '__main__':
                 # Scrape the search result links off the page
                 result_links = get_result_links(search_page_soup)
 
-                for link in result_links:
-                    link = 'https://beta.sam.gov/opp/d36b80109b064407ad1385d304ceae2b/view?keywords=&sort=-modifiedDate&index=opp&is_active=true&page=1'
+                for i, link in enumerate(result_links):
+                    print(f'Processing results: {i}')
 
                     # Parse the current page
                     # If anything goes wrong, just skip to the next result
