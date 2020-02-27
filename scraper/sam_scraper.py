@@ -41,6 +41,10 @@ class RFP:
 
         self.__soup = BeautifulSoup(WEB_DRIVER.page_source, 'html.parser')
 
+        # Find Title
+        title_elem = self.__soup.select_one("h1")
+        self.title = title_elem.string
+
         self.header = self.parse_header()
 
         self.gen_info = self.parse_gen_info()
@@ -48,6 +52,13 @@ class RFP:
         self.classification = self.parse_classification()
 
         self.description = self.parse_description()
+
+        self.parsed_page = {
+            'header': self.header,
+            'gen_info': self.gen_info,
+            'classification': self.classification,
+            'description': self.description
+        }
 
         self.attachments = self.parse_attachments()
 
@@ -117,7 +128,7 @@ class RFP:
 
     def parse_attachments(self):
         attachments = self.__soup.select_one('attachment-section')
-        attachment_links = [a['href'] for a in attachments.select('a.file-link.ng-star-inserted')]
+        attachment_links = {a.contents[0]: a['href'] for a in attachments.select('a.file-link.ng-star-inserted')}
 
         return attachment_links
 
@@ -211,11 +222,11 @@ if __name__ == '__main__':
 
     # Open a tarfile writing with bz2 compression
     with tarfile.open(tar_path, 'w:bz2') as tar_file:
+    
 
         # While the current dir is under 10GB
         while directory_size(Path('.')) // 2 ** 30 < 10:
             for page in range(1, num_pages + 1):
-
                 try:
                     WEB_DRIVER.get(f'{search_url}&page={page}')
                     sleep(1)  # Sleep for a sec
@@ -239,27 +250,38 @@ if __name__ == '__main__':
                     except Exception as _:
                         continue
 
-                    sys.exit(0)
+                    
                     # turn the body into a json string
-                    body_io = io.StringIO(json.dumps(current_rfp))
+                    body_io = io.BytesIO(str.encode(json.dumps(current_rfp.parsed_page)))
                     # Create an info object describing the file
-                    body_info = tarfile.TarInfo(name=f' _body.json')
+                    body_info = tarfile.TarInfo(name=f'{current_rfp.title}_body.json')
 
                     # Seek to the end of string and get length
-                    body_info.size = body_io.seek(0, 2).tell()
+                    body_info.size = body_io.seek(0, 2)
                     # Seek beginning of string
                     body_io.seek(0, 0)
 
                     tar_file.addfile(tarinfo=body_info, fileobj=body_io)
 
-                    for file_link in current_rfp.attachments:
-                        # set file name
-                        
+                    for file_name, file_link in current_rfp.attachments.items():
+                        file_name = file_name.strip().replace(' ', '_')
+                        file_name = file_name.replace('(', '')
+                        file_name = file_name.replace(')', '')
+                        file_name = Path(file_name)
+                        file_name.touch()
                         # wget file
-                        subprocess.run(f'wget ')
-                        sleep(1)
+                        try:
+                            subprocess.run(f'wget -O {file_name} {file_link}', shell=True)
+                            sleep(1)
+                        except Exception:
+                            # This will normally fail when the filename is invalid on *nix
+                            file_name.unlink()
+                            continue
 
                         # write file to tar
+                        tar_file.add(file_name)
+                        # Delete file
+                        file_name.unlink()
 
 
 
