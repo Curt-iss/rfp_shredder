@@ -3,6 +3,7 @@
 # Imports ---------------------------------------------------------------------
 
 from bs4 import BeautifulSoup
+from bs4.element import NavigableString
 from datetime import datetime
 import json
 from pathlib import Path
@@ -24,7 +25,7 @@ chrome_options = Options()
 chrome_options.add_argument('--headless')
 
 BASE_URL = 'https://beta.sam.gov/'
-WEB_DRIVER = webdriver.Chrome(chrome_options=chrome_options)
+WEB_DRIVER = webdriver.Chrome(options=chrome_options)
 
 # Classes ---------------------------------------------------------------------
 
@@ -34,6 +35,8 @@ class RFP:
         """ When given a url, this class contains the scraped contents.
         """
         WEB_DRIVER.get(rfp_url)
+        sleep(1)
+        WEB_DRIVER.execute_script('window.scrollTo(0, document.body.scrollHeight/2);')
         sleep(1)
 
         self.__soup = BeautifulSoup(WEB_DRIVER.page_source, 'html.parser')
@@ -54,7 +57,7 @@ class RFP:
         header = self.__soup.select_one('section#header')
         header_dict = dict()
         header_dict['is_active'] = header.select_one('span.sam.green.status.label.ng-star-inserted').string
-        notice_id_elem, content_elem = header.select('div.content')
+        notice_id_elem, *_, content_elem = header.select('div.content')
         header_dict['notice_id'] = notice_id_elem.select_one('div.description').string
         
         sub_headers = content_elem.select('div.header')
@@ -68,9 +71,18 @@ class RFP:
         gen_info = self.__soup.select_one('section#general')
         gen_info_dict = dict()
 
-        list_items = gen_info.select('li')
+        list_items = gen_info.select('ul.usa-unstyled-list > li')
         for item in list_items:
-            gen_info_dict[item.contents[0].string] = item.string
+            if item.select_one('strong') == None:
+                continue
+            item_strings = [
+                content.strip()
+                for content in item.contents
+                if type(content) is NavigableString and content != ' ']
+            if len(item_strings) > 0:
+                gen_info_dict[item.select_one('strong').string.strip()[:-1]] = item_strings[0]
+            else:
+                gen_info_dict[item.select_one('strong').string.strip()[:-1]] = item.string
 
         return gen_info_dict
 
@@ -78,14 +90,23 @@ class RFP:
         classification = self.__soup.select_one('section#classification')
         class_dict = dict()
 
-        list_items = classification.select('li')
+        list_items = classification.select('ul.usa-unstyled-list > li')
         for item in list_items:
-            class_dict[item.contents[0].string] = item.string
+            if item.select_one('strong') == None:
+                continue
+            item_strings = [
+                content.strip()
+                for content in item.contents
+                if type(content) is NavigableString and content != ' ']
+            if len(item_strings) > 0:
+                class_dict[item.select_one('strong').string.strip()] = item_strings[0]
+            else:
+                class_dict[item.select_one('strong').string.strip()] = item.string
 
         return class_dict
 
     def parse_description(self):
-        description = self.__soup.select_one('select#description')
+        description = self.__soup.select_one('section#description')
         description_dict = dict()
         description_dict['text'] = ''
 
@@ -96,7 +117,7 @@ class RFP:
 
     def parse_attachments(self):
         attachments = self.__soup.select_one('attachment-section')
-        attachment_links = [a['href'] for a in attachments.select('a.file-link')]
+        attachment_links = [a['href'] for a in attachments.select('a.file-link.ng-star-inserted')]
 
         return attachment_links
 
@@ -163,7 +184,7 @@ def get_result_links(search_soup: BeautifulSoup) -> List[str]:
     """
     # Looks like the base url is clipped off of these anchors.
     # So we'll concatenate them here
-    anchors = search_soup.select('a.wordbreak.ng-star-inserted')
+    anchors = search_soup.select('a.wordbreak')
     return [BASE_URL + anchor['href'][1:] for anchor in anchors]
 
 # Main ------------------------------------------------------------------------
@@ -209,14 +230,25 @@ if __name__ == '__main__':
                 result_links = get_result_links(search_page_soup)
 
                 for link in result_links:
+                    link = 'https://beta.sam.gov/opp/d36b80109b064407ad1385d304ceae2b/view?keywords=&sort=-modifiedDate&index=opp&is_active=true&page=1'
+
                     # Parse the current page
-                    current_rfp = RFP(link)
-                    
+                    # If anything goes wrong, just skip to the next result
+                    try:
+                        current_rfp = RFP(link)
+                    except Exception as _:
+                        continue
+
+                    sys.exit(0)
                     # turn the body into a json string
                     body_io = io.StringIO(json.dumps(current_rfp))
                     # Create an info object describing the file
-                    body_info = tarfile.TarInfo(name=f'{}_body.json')
-                    info.size = len(body_io.buf)
+                    body_info = tarfile.TarInfo(name=f' _body.json')
+
+                    # Seek to the end of string and get length
+                    body_info.size = body_io.seek(0, 2).tell()
+                    # Seek beginning of string
+                    body_io.seek(0, 0)
 
                     tar_file.addfile(tarinfo=body_info, fileobj=body_io)
 
