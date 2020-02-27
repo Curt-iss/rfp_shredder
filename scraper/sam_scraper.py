@@ -4,11 +4,13 @@
 
 from bs4 import BeautifulSoup
 from datetime import datetime
-import os
+import json
 from pathlib import Path
+import os
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 import subprocess
+import io
 import sys
 import tarfile
 from time import sleep
@@ -36,15 +38,15 @@ class RFP:
 
         self.__soup = BeautifulSoup(WEB_DRIVER.page_source, 'html.parser')
 
-        self.header = parse_header()
+        self.header = self.parse_header()
 
-        self.gen_info = parse_gen_info()
+        self.gen_info = self.parse_gen_info()
 
-        self.classification = parse_classification()
+        self.classification = self.parse_classification()
 
-        self.description = parse_description()
+        self.description = self.parse_description()
 
-        self.attachments = parse_attachments()
+        self.attachments = self.parse_attachments()
 
     def parse_header(self):
         """ Parse the header for this page
@@ -207,6 +209,27 @@ if __name__ == '__main__':
                 result_links = get_result_links(search_page_soup)
 
                 for link in result_links:
-                    pass
+                    # Parse the current page
+                    current_rfp = RFP(link)
+                    
+                    # turn the body into a json string
+                    body_io = io.StringIO(json.dumps(current_rfp))
+                    # Create an info object describing the file
+                    body_info = tarfile.TarInfo(name=f'{}_body.json')
+                    info.size = len(body_io.buf)
+
+                    tar_file.addfile(tarinfo=body_info, fileobj=body_io)
+
+                    for file_link in current_rfp.attachments:
+                        # set file name
+                        
+                        # wget file
+                        subprocess.run(f'wget ')
+                        sleep(1)
+
+                        # write file to tar
+
+
+
 
         print('VM ran out of space...\nExiting...')
