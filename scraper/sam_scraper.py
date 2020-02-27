@@ -4,11 +4,13 @@
 
 from bs4 import BeautifulSoup
 from datetime import datetime
-import os
+import json
 from pathlib import Path
+import os
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 import subprocess
+import io
 import sys
 import tarfile
 from time import sleep
@@ -36,15 +38,15 @@ class RFP:
 
         self.__soup = BeautifulSoup(WEB_DRIVER.page_source, 'html.parser')
 
-        self.header = parse_header()
+        self.header = self.parse_header()
 
-        self.gen_info = parse_gen_info()
+        self.gen_info = self.parse_gen_info()
 
-        self.classification = parse_classification()
+        self.classification = self.parse_classification()
 
-        self.description = parse_description()
+        self.description = self.parse_description()
 
-        self.attachments = parse_attachments()
+        self.attachments = self.parse_attachments()
 
     def parse_header(self):
         """ Parse the header for this page
@@ -66,25 +68,37 @@ class RFP:
         gen_info = self.__soup.select_one('section#general')
         gen_info_dict = dict()
 
+        list_items = gen_info.select('li')
+        for item in list_items:
+            gen_info_dict[item.contents[0].string] = item.string
+
         return gen_info_dict
 
     def parse_classification(self):
         classification = self.__soup.select_one('section#classification')
         class_dict = dict()
 
+        list_items = classification.select('li')
+        for item in list_items:
+            class_dict[item.contents[0].string] = item.string
+
         return class_dict
 
     def parse_description(self):
         description = self.__soup.select_one('select#description')
         description_dict = dict()
+        description_dict['text'] = ''
 
+        paragraphs = description.select('p')
+        for paragraph in paragraphs:
+            description_dict['text'] += paragraph.string
         return description_dict
 
     def parse_attachments(self):
         attachments = self.__soup.select_one('attachment-section')
-        attachments_dict = dict()
+        attachment_links = [a['href'] for a in attachments.select('a.file-link')]
 
-        return attachments_dict
+        return attachment_links
 
 
 # Functions -------------------------------------------------------------------
@@ -195,6 +209,27 @@ if __name__ == '__main__':
                 result_links = get_result_links(search_page_soup)
 
                 for link in result_links:
-                    pass
+                    # Parse the current page
+                    current_rfp = RFP(link)
+                    
+                    # turn the body into a json string
+                    body_io = io.StringIO(json.dumps(current_rfp))
+                    # Create an info object describing the file
+                    body_info = tarfile.TarInfo(name=f'{}_body.json')
+                    info.size = len(body_io.buf)
+
+                    tar_file.addfile(tarinfo=body_info, fileobj=body_io)
+
+                    for file_link in current_rfp.attachments:
+                        # set file name
+                        
+                        # wget file
+                        subprocess.run(f'wget ')
+                        sleep(1)
+
+                        # write file to tar
+
+
+
 
         print('VM ran out of space...\nExiting...')
