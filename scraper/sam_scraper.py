@@ -49,7 +49,7 @@ class RFP:
     def parse_header(self):
         """ Parse the header for this page
         """
-        header = __soup.select_one('section#header')
+        header = self.__soup.select_one('section#header')
         header_dict = dict()
         header_dict['is_active'] = header.select_one('span.sam.green.status.label.ng-star-inserted').string
         notice_id_elem, content_elem = header.select('div.content')
