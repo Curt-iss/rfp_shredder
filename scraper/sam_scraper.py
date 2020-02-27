@@ -43,7 +43,7 @@ class RFP:
 
         # Find Title
         title_elem = self.__soup.select_one("h1")
-        self.title = title_elem.string
+        self.title = title_elem.contents[-1]
 
         self.header = self.parse_header()
 
@@ -67,7 +67,11 @@ class RFP:
         """
         header = self.__soup.select_one('section#header')
         header_dict = dict()
-        header_dict['is_active'] = header.select_one('span.sam.green.status.label.ng-star-inserted').string
+        try:
+            header_dict['is_active'] = header.select_one('span.sam.green.status.label.ng-star-inserted').string
+        except Exception:
+            header_dict['is_active'] = header.select_one('span.sam.gray.status.label.ng-star-inserted').string
+
         notice_id_elem, *_, content_elem = header.select('div.content')
         header_dict['notice_id'] = notice_id_elem.select_one('div.description').string
         
@@ -241,13 +245,14 @@ if __name__ == '__main__':
                 result_links = get_result_links(search_page_soup)
 
                 for i, link in enumerate(result_links):
-                    print(f'Processing results: {i}')
+                    print(f'Processing result: {i}')
 
                     # Parse the current page
                     # If anything goes wrong, just skip to the next result
                     try:
                         current_rfp = RFP(link)
                     except Exception as _:
+                        print(f'Couldn\'t Proccess result {i}')
                         continue
 
                     
@@ -282,8 +287,5 @@ if __name__ == '__main__':
                         tar_file.add(file_name)
                         # Delete file
                         file_name.unlink()
-
-
-
 
         print('VM ran out of space...\nExiting...')
