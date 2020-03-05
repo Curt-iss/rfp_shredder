@@ -85,8 +85,8 @@ if __name__ == '__main__':
     # 1.    pathlib provides a pretty easy to use way
     #       of guaranteeing that a given path to a file
     #       will work across all of the operating systems we use.
-    #       Admittedly, not super useful in this script. We really use
-    #       any of its features here, but it's important to know. I use it sam_scraper.py and
+    #       Admittedly, not super useful in this script. We really don't use
+    #       any of its features here, but it's important to know. I use it in sam_scraper.py and
     #       pdf_to_docx.py
     # 2.    sys (and "os") is a library with a bunch of random system stuff
     #       the most important things are sys.argv and sys.exit
