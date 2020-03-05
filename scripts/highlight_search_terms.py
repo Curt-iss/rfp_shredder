@@ -56,8 +56,13 @@ def highlight_terms(file_name):
         # Get all the contents from the file.
         content = source_stream.getvalue()
         for line in content:
+            # Here's a helpful SO I found on highlighting
+            # https://stackoverflow.com/questions/46116389/highlight-text-using-python-docx
+
             # code here for highlighting and boldening words
             line = line
+
+
 
     document = docx.Document(source_stream)
     source_stream.close()
