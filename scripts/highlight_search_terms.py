@@ -2,7 +2,7 @@
 
 # Imports --------------------------------------
 import docx
-import StringIO
+from io import StringIO
 
 '''
 doc = docx.Document('test.docx')
