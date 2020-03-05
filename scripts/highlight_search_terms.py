@@ -17,7 +17,8 @@ for block in iter_block_items(doc):
 #
 #
 # 1. Somewhere in the file you want to debug, find a line you want to "stop" on
-#       (i.e. set a breakpoint), at the time of writing, scroll down to line __
+#       (i.e. set a breakpoint), at the time of writing, scroll down to line 94
+#       (yu could pick any line though, doesn't matter)
 #       If you mouse over the line number on the left side of the editor, you'll
 #       see a red dot. Click the dot to set a breakpoint.
 # 2. Find the Ladybug with a play button on the the Left side of your window
