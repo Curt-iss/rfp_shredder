@@ -60,7 +60,7 @@ def highlight_terms(file_name):
                     for i in range(len(x)-1):
                         run.add_text(x[i])
                         run.add_text(key)
-                        # Below causes an error
+                        # Line below causes an error
                         # run.font.highlight_color = docx.enum.text.WD_COLOR_INDEX.YELLOW
     the_doc.save('t2.docx')
     return 1
