@@ -45,30 +45,30 @@ def highlight_terms(file_name):
         Parameters:
         file_name (Path): A Path object to the given file
     """
+    # Key words to find
+    keywords = ['must', 'shall', 'will']
 
-    # get the input from user about file name
-    with open(file_name, 'rb') as f:
-        source_stream = StringIO(f.read())
+    # Use the file they input.
+    the_doc = docx.Document(file_name)
+    for pg in the_doc.paragraphs:
+        for key in keywords:
+            if key in pg.text:
+                # inline = pg.runs
+                for run in pg.runs:
+                    x = run.text.split(key)
+                    run.clear()
+                    for i in range(len(x)-1):
+                        run.add_text(x[i])
+                        run.add_text(key)
+                        # Below causes an error
+                        # run.font.highlight_color = docx.enum.text.WD_COLOR_INDEX.YELLOW
+    the_doc.save('t2.docx')
+    return 1
 
-        # Check if it worked, should print True.
-        print(source_stream.readable())
-
-        # Get all the contents from the file.
-        content = source_stream.getvalue()
-        for line in content:
-            # Here's a helpful SO I found on highlighting
-            # https://stackoverflow.com/questions/46116389/highlight-text-using-python-docx
-
-            # code here for highlighting and boldening words
-            line = line
+    # Here's a helpful SO I found on highlighting
+    # https://stackoverflow.com/questions/46116389/highlight-text-using-python-docx
 
 
-
-    document = docx.Document(source_stream)
-    source_stream.close()
-
-    target_stream = StringIO()
-    document.save(target_stream)
 
 # Main ------------------------------------------------------------------------
 
@@ -76,7 +76,7 @@ def highlight_terms(file_name):
 if __name__ == '__main__':
     # How can we pass in the file name to here?
     # highlight_terms(the_file)
-
+    
     # * Here's how we can take command line arguments
     # From the command line/terminal, you can run this script with
     # python highlight_search_terms.py path/to/file/here
